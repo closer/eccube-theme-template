@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
-  config.vm.hostname = "ecstasy.jp-berkshelf"
+  config.vm.hostname = "cookbook-eccube-berkshelf"
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "Berkshelf-CentOS-6.3-x86_64-minimal"
@@ -39,7 +39,8 @@ Vagrant.configure("2") do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  config.vm.synced_folder "./src", "/var/www/eccube/data/Smarty/templates/default", :extra => "dmode=777,fmode=666"
+  config.vm.synced_folder "./", "/var/www/eccube/data/Smarty/templates/default", :extra => "dmode=777,fmode=666"
+  config.vm.synced_folder "./_packages", "/var/www/eccube/html/user_data/packages/default", :extra => "dmode=777,fmode=666"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -82,18 +83,15 @@ Vagrant.configure("2") do |config|
         :server_repl_password => 'replpass'
       },
       :eccube => {
-        :db => {
-          :database => 'eccube_db',
-          :user     => 'eccube_db_user',
-          :password => 'eccubedbpassword'
-        }
+        :hostname => 'localhost:8080'
       }
     }
 
     chef.run_list = [
-        "recipe[eccube]",
+        "recipe[eccube::default]",
         "recipe[eccube::database]",
-        "recipe[eccube::http_access]"
+        "recipe[eccube::install]",
+        "recipe[eccube::http_access]",
     ]
   end
 end
